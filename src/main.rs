@@ -1,3 +1,6 @@
+mod stateless;
+
 fn main() {
-    println!("Hello, stateless!");
+    let s = stateless::State{id: 0, name: "foo"};
+    println!("Hello, state {}", s.name);
 }
