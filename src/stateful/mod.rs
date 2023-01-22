@@ -1,34 +1,34 @@
 #[derive(PartialEq)]
 #[derive(Debug)]
-pub struct State {
+pub struct State<'sm_life> {
     pub id: u32,
-    pub name: &'static str,
+    pub name: &'sm_life str,
 }
 
 #[derive(PartialEq)]
-pub struct Event {
+pub struct Event<'sm_life> {
     pub id: u32,
-    pub name: &'static str,
+    pub name: &'sm_life str,
 }
 
 pub type Action = fn();
 
-pub struct Transition{
-    pub start: &'static State,
-    pub event: &'static Event,
+pub struct Transition<'sm_life> {
+    pub start: &'sm_life State<'sm_life>,
+    pub event: &'sm_life Event<'sm_life>,
     pub action: Action,
-    pub end: &'static State
+    pub end: &'sm_life State<'sm_life>
 }
 
-pub struct StateMachine<const STATE_COUNT: usize, const EVENT_COUNT: usize, const TRANSITION_COUNT: usize> {
-    pub states: [&'static State; STATE_COUNT],
-    pub events: [&'static Event; EVENT_COUNT],
-    pub transitions: [Transition; TRANSITION_COUNT],
+pub struct StateMachine<'sm_life, const STATE_COUNT: usize, const EVENT_COUNT: usize, const TRANSITION_COUNT: usize> {
+    pub states: [&'sm_life State<'sm_life>; STATE_COUNT],
+    pub events: [&'sm_life Event<'sm_life>; EVENT_COUNT],
+    pub transitions: [Transition<'sm_life>; TRANSITION_COUNT],
 
-    pub state: &'static State
+    pub state: &'sm_life State<'sm_life>
 }
 
-fn send<const STATE_COUNT: usize, const EVENT_COUNT: usize, const TRANSITION_COUNT: usize>(mut state_machine: StateMachine<STATE_COUNT, EVENT_COUNT, TRANSITION_COUNT>, event: &Event) -> StateMachine<STATE_COUNT, EVENT_COUNT, TRANSITION_COUNT> {
+fn send<'sm_life, const STATE_COUNT: usize, const EVENT_COUNT: usize, const TRANSITION_COUNT: usize>(mut state_machine: StateMachine<'sm_life, STATE_COUNT, EVENT_COUNT, TRANSITION_COUNT>, event: &Event) -> StateMachine<'sm_life, STATE_COUNT, EVENT_COUNT, TRANSITION_COUNT> {
     for t in state_machine.transitions.iter() {
         if t.start == state_machine.state && t.event == event {
         (t.action)();
