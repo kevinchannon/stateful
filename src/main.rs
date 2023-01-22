@@ -7,6 +7,6 @@ fn main() {
     
     println!("Hello, state {}", FOO.name);
 
-    let sm = stateful::StateMachine{states: [&FOO], events: [&BAR], transitions: []};
+    let sm = stateful::StateMachine{states: [&FOO], events: [&BAR], transitions: [], state: &FOO};
     println!("State machine with {} states and {} actions", sm.states.len(), sm.transitions.len());
 }

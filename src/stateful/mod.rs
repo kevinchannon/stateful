@@ -1,8 +1,11 @@
+#[derive(PartialEq)]
+#[derive(Debug)]
 pub struct State {
     pub id: u32,
     pub name: &'static str,
 }
 
+#[derive(PartialEq)]
 pub struct Event {
     pub id: u32,
     pub name: &'static str,
@@ -23,6 +26,19 @@ pub struct StateMachine<const STATE_COUNT: usize, const EVENT_COUNT: usize, cons
     pub transitions: [Transition; TRANSITION_COUNT],
 
     pub state: &'static State
+}
+
+fn send<const STATE_COUNT: usize, const EVENT_COUNT: usize, const TRANSITION_COUNT: usize>(mut state_machine: StateMachine<STATE_COUNT, EVENT_COUNT, TRANSITION_COUNT>, event: &Event) -> StateMachine<STATE_COUNT, EVENT_COUNT, TRANSITION_COUNT> {
+    for t in state_machine.transitions.iter() {
+        if t.start == state_machine.state && t.event == event {
+        (t.action)();
+            state_machine.state = t.end;
+
+            return state_machine;
+        }
+    }
+
+    panic!("No transition for this event from this state!");
 }
 
 #[cfg(test)]
@@ -56,7 +72,8 @@ mod test {
         let sm = StateMachine{
             states: [&IDLE, &ACTIVE],
             events: [&ACTIVATE, &DEACTIVATE],
-            transitions: [Transition{start: &IDLE, event: &ACTIVATE, action: test_action, end: &ACTIVE}]
+            transitions: [Transition{start: &IDLE, event: &ACTIVATE, action: test_action, end: &ACTIVE}],
+            state: &IDLE 
         };
 
         assert_eq!(2, sm.states.len());
@@ -74,7 +91,7 @@ mod test {
         const ACTIVATE: Event = Event{id: 0, name: "activate"};
         const DEACTIVATE: Event = Event{id: 1, name: "deactivate"};
         
-        let sm = StateMachine{
+        let mut sm = StateMachine{
             states: [
                 &IDLE, 
                 &ACTIVE
@@ -86,9 +103,19 @@ mod test {
             transitions: [
                 Transition{start: &IDLE, event: &ACTIVATE, action: test_action, end: &ACTIVE},
                 Transition{start: &ACTIVE, event: &DEACTIVATE, action: test_action, end: &IDLE}
-                ]
+                ],
+            state: &IDLE
         };
 
-        assert_eq!(IDLE, sm.state);
+        assert_eq!(&IDLE, sm.state);
+
+        sm = send(sm, &ACTIVATE);
+
+        assert_eq!(&ACTIVE, sm.state);
+
+        sm = send(sm, &DEACTIVATE);
+
+        assert_eq!(&IDLE, sm.state);
+
     }
 }
