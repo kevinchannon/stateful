@@ -1,9 +1,11 @@
-mod stateless;
+mod stateful;
+
+const FOO: stateful::State = stateful::State{id: 0, name: "foo"};
 
 fn main() {
-    let s = stateless::State{id: 0, name: "foo"};
-    println!("Hello, state {}", s.name);
+    
+    println!("Hello, state {}", FOO.name);
 
-    let sm = stateless::StateMachine{states: [s]};
-    println!("State machine with {} states", sm.states.len());
+    let sm = stateful::StateMachine{states: [&FOO], actions: []};
+    println!("State machine with {} states and {} actions", sm.states.len(), sm.actions.len());
 }

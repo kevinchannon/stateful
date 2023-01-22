@@ -3,10 +3,10 @@ pub struct State {
     pub name: &'static str,
 }
 
-pub type Action = fn(State) -> State;
+pub type Action = fn(&'static State) -> &'static State;
 
 pub struct StateMachine<const STATE_COUNT: usize, const ACTION_COUNT: usize> {
-    pub states: [State; STATE_COUNT],
+    pub states: [&'static State; STATE_COUNT],
     pub actions: [Action; ACTION_COUNT]
 }
 
@@ -23,17 +23,24 @@ mod test {
 
     #[test]
     fn create_state_machine(){
-        fn test_action(start: State) -> State {
+        fn test_action(start: &'static State) -> &'static State {
             start
         }
 
+        const IDLE: State = State{ id: 0, name: "IDLE"};
+        const ACTIVE: State = State{ id: 1, name: "ACTIVE"};
+
         let sm = StateMachine{
-            states: [State{id: 0, name: "IDLE"}, State{id: 1, name: "ACTIVE"}],
+            states: [&IDLE, &ACTIVE],
             actions: [test_action]
         };
 
         assert_eq!(2, sm.states.len());
         assert_eq!(1, sm.actions.len());
     }
+
+    #[test]
+    fn run_until_runs_until_the_target_state_is_reached(){
+
     }
 }
