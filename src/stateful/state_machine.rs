@@ -2,7 +2,7 @@ use crate::State;
 use crate::Event;
 use crate::Transition;
 
-pub struct StateMachine<'sm_life, const STATE_COUNT: usize, const EVENT_COUNT: usize, const TRANSITION_COUNT: usize> {
+pub struct BasicStateMachine<'sm_life, const STATE_COUNT: usize, const EVENT_COUNT: usize, const TRANSITION_COUNT: usize> {
     pub states: [&'sm_life State<'sm_life>; STATE_COUNT],
     pub events: [&'sm_life Event<'sm_life>; EVENT_COUNT],
     pub transitions: [Transition<'sm_life>; TRANSITION_COUNT],
@@ -26,7 +26,7 @@ mod test {
         const ACTIVATE: Event = Event{id: 0, name: "activate"};
         const DEACTIVATE: Event = Event{id: 1, name: "deactivate"};
 
-        let sm = StateMachine{
+        let sm = BasicStateMachine{
             states: [&IDLE, &ACTIVE],
             events: [&ACTIVATE, &DEACTIVATE],
             transitions: [Transition{start: &IDLE, event: &ACTIVATE, action: test_action, end: &ACTIVE}],

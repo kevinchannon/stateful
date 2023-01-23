@@ -9,6 +9,6 @@ fn main() {
     
     println!("Hello, state {}", FOO.name);
 
-    let sm = StateMachine{states: [&FOO], events: [&BAR], transitions: [], state: &FOO};
+    let sm = BasicStateMachine{states: [&FOO], events: [&BAR], transitions: [], state: &FOO};
     println!("State machine with {} states and {} actions", sm.states.len(), sm.transitions.len());
 }
