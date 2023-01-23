@@ -1,7 +1,8 @@
 mod stateful;
+use stateful::elements::*;
 
-const FOO: stateful::State = stateful::State{id: 0, name: "foo"};
-const BAR: stateful::Event = stateful::Event{id: 0, name: "bar"};
+const FOO: State = State{id: 0, name: "foo"};
+const BAR: Event = Event{id: 0, name: "bar"};
 
 fn main() {
     
