@@ -2,13 +2,12 @@ mod stateful;
 use stateful::elements::*;
 use stateful::state_machine::*;
 
-const FOO: State = State{id: 0, name: "foo"};
-const BAR: Event = Event{id: 0, name: "bar"};
-
 fn main() {
-    
-    println!("Hello, state {}", FOO.name);
+    let foo: State = State::new(0, "foo");
+    let bar: Event = Event{id: 0, name: "bar"};
 
-    let sm = BasicStateMachine{states: [&FOO], events: [&BAR], transitions: [], state: &FOO};
+    println!("Hello, state {}", foo.name);
+
+    let sm = BasicStateMachine{states: [&foo], events: [&bar], transitions: [], state: &foo};
     println!("State machine with {} states and {} actions", sm.states.len(), sm.transitions.len());
 }

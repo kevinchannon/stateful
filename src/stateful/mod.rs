@@ -33,14 +33,9 @@ mod test {
     fn reaches_the_correct_state_when_an_event_is_received() {
         fn test_action() {}
 
-        const IDLE: State = State {
-            id: 0,
-            name: "IDLE",
-        };
-        const ACTIVE: State = State {
-            id: 1,
-            name: "ACTIVE",
-        };
+
+        let idle: State = State::new(0, "IDLE");
+        let active: State = State::new(1, "ACTIVE");
 
         const ACTIVATE: Event = Event {
             id: 0,
@@ -52,33 +47,33 @@ mod test {
         };
 
         let mut sm = BasicStateMachine {
-            states: [&IDLE, &ACTIVE],
+            states: [&idle, &active],
             events: [&ACTIVATE, &DEACTIVATE],
             transitions: [
                 Transition {
-                    start: &IDLE,
+                    start: &idle,
                     event: &ACTIVATE,
-                    action: test_action,
-                    end: &ACTIVE,
+                    action: Box::new(test_action),
+                    end: &active,
                 },
                 Transition {
-                    start: &ACTIVE,
+                    start: &active,
                     event: &DEACTIVATE,
-                    action: test_action,
-                    end: &IDLE,
+                    action: Box::new(test_action),
+                    end: &idle,
                 },
             ],
-            state: &IDLE,
+            state: &idle,
         };
 
-        assert_eq!(&IDLE, sm.state);
+        assert_eq!(&idle, sm.state);
 
         sm = send(sm, &ACTIVATE);
 
-        assert_eq!(&ACTIVE, sm.state);
+        assert_eq!(&active, sm.state);
 
         sm = send(sm, &DEACTIVATE);
 
-        assert_eq!(&IDLE, sm.state);
+        assert_eq!(&idle, sm.state);
     }
 }

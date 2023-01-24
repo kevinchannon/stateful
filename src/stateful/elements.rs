@@ -1,20 +1,20 @@
-
+type Action = Box<dyn Fn() -> ()>;
 
 #[derive(PartialEq)]
 #[derive(Debug)]
-pub struct State<'sm_life, Action_T> {
+pub struct State<'sm_life> {
     pub id: u32,
     pub name: &'sm_life str,
-    pub on_entry: Action_T
+    pub on_entry: Action
 }
 
-impl<'sm_life, Action_T> State<'sm_life, Action_T> {
-    pub fn new_with_entry(id: u32, name: &'sm_life str, on_entry: Action_T) -> Self {
-        State{id: id, name: name, on_entry: on_entry}
+impl<'sm_life> State<'sm_life> {
+    pub fn new_with_entry(id: u32, name: &'sm_life str, on_entry: dyn Fn()->()) -> Self {
+        State{id: id, name: name, on_entry: Box::new(on_entry)}
     }
 
     pub fn new(id: u32, name: &'sm_life str) -> Self {
-        State{id: id, name: name, on_entry: ||{}}
+        State{id: id, name: name, on_entry: Box::new(||{})}
     }
 }
 
@@ -24,11 +24,11 @@ pub struct Event<'sm_life> {
     pub name: &'sm_life str,
 }
 
-pub struct Transition<'sm_life, Action_T> {
-    pub start: &'sm_life State<'sm_life, Action_T>,
+pub struct Transition<'sm_life> {
+    pub start: &'sm_life State<'sm_life>,
     pub event: &'sm_life Event<'sm_life>,
-    pub action: Action_T,
-    pub end: &'sm_life State<'sm_life, Action_T>
+    pub action: Action,
+    pub end: &'sm_life State<'sm_life>
 }
 
 

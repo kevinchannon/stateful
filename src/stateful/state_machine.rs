@@ -10,8 +10,6 @@ pub struct BasicStateMachine<'sm_life, const STATE_COUNT: usize, const EVENT_COU
     pub state: &'sm_life State<'sm_life>
 }
 
-
-
 #[cfg(test)]
 mod test {
     use super::*;
@@ -20,21 +18,42 @@ mod test {
     fn create_state_machine(){
         fn test_action() {}
 
-        const IDLE: State = State{ id: 0, name: "IDLE"};
-        const ACTIVE: State = State{ id: 1, name: "ACTIVE"};
+        let idle: State = State::new(0, "IDLE");
+        let active: State = State::new(1, "ACTIVE");
 
         const ACTIVATE: Event = Event{id: 0, name: "activate"};
         const DEACTIVATE: Event = Event{id: 1, name: "deactivate"};
 
         let sm = BasicStateMachine{
-            states: [&IDLE, &ACTIVE],
+            states: [&idle, &active],
             events: [&ACTIVATE, &DEACTIVATE],
-            transitions: [Transition{start: &IDLE, event: &ACTIVATE, action: test_action, end: &ACTIVE}],
-            state: &IDLE 
+            transitions: [Transition{start: &idle, event: &ACTIVATE, action: Box::new(test_action), end: &active}],
+            state: &idle 
         };
 
         assert_eq!(2, sm.states.len());
         assert_eq!(2, sm.events.len());
         assert_eq!(1, sm.transitions.len());
+    }
+
+    #[test]
+    fn entry_function_is_called_on_state_entry(){
+        fn test_action() {}
+
+        let mut called = false;
+        let mut entry_spy = || called = true;
+
+        let idle: State = State::new(0, "IDLE");
+        let active: State = State::new_with_entry(1, "ACTIVE", entry_spy);
+ 
+        const ACTIVATE: Event = Event{id: 0, name: "activate"};
+        const DEACTIVATE: Event = Event{id: 1, name: "deactivate"};
+
+        let sm = BasicStateMachine{
+            states: [&idle, &active],
+            events: [&ACTIVATE, &DEACTIVATE],
+            transitions: [Transition{start: &idle, event: &ACTIVATE, action: test_action, end: &active}],
+            state: &idle 
+        };
     }
 }
